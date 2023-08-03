@@ -1,0 +1,8 @@
+docs/
+.venv/
+data/
+models/
+models_old/
+service/
+training/
+models.zip
