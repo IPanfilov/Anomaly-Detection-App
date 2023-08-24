@@ -1,0 +1,127 @@
+org: panfilov
+service: predictor-app-git
+
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+  - serverless-dynamodb-local
+
+
+
+provider:
+  name: aws
+  deploymentMethod: direct
+  runtime: python3.10 #as of July 18, 2023, 3.11 is not supported, 
+                      #3.10 shows warning on deploy as "not standard runtime" but works
+  stage: dev
+  region: us-east-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - Fn::GetAtt: [ imagesTable, Arn ]
+        - Effect: Allow
+          Action:
+            - s3:*
+          Resource: 
+            - Fn::Join: ['', [!GetAtt [ "bucket", "Arn" ], '/*']]              #this is used to getObject and putObject
+            - Fn::GetAtt: [ "bucket", "Arn" ]              #this is used for "listObjects"
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+            - lambda:InvokeAsync
+          Resource: 
+            "*"
+
+  apiGateway:            #allow apiGateway to pass through files
+    binaryMediaTypes:
+      - '*/*' 
+  environment:          #set ENV variables to be used by .py files
+    IMAGES_TABLE: ${self:custom.tableName}
+    APP_BUCKET: ${self:custom.bucketName}
+    LABELER_FUNCTION: ${self:service}-${self:custom.stage}-labelOnUpload
+
+functions:
+  app:
+    handler: wsgi_handler.handler
+    module: flask-app
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+    memorySize: 128
+  labelOnUpload:
+    handler: predictor.main
+    module: labeler
+    timeout: 900
+    memorySize: 2048
+    ephemeralStorageSize: 3000
+
+resources:
+  Resources:
+    imagesTable:           #this is how table is referred to in this file
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.tableName}                   #this is how table is called in dynamoDB storage
+    bucket:                                             #this is how bucket is referred to in this file
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName}          #this is how bucket is called in s3 storage
+
+#*OPTIONAL* stops SERVERLESS from copying listed folders to deployment package, this saves a lot of space 
+package:
+  individually: true
+  patterns:
+    - '!.venv/**'
+    - '!node_modules/**'
+    - '!.dynamodb/**'
+    - '!__pycache__/**'
+
+custom:
+  # Our stage is based on what is passed in when running serverless
+  # commands. Or fallsback to what we have set in the provider section.
+  stage: ${opt:stage, self:provider.stage}
+  #dynamoDB table name, has to be unique within AWS account
+  tableName: 'images-git'
+  #s3 bucket name, has to be globally unique
+  bucketName: 'anomaly-detection-322'
+  wsgi:             #point wsgi handler at "app" object in "app.py" file
+    app: flask-app/app.app
+    packRequirements: false
+  pythonRequirements:
+    #*OPTIONAL* stops SERVERLESS from reusing previously packed requirements, helps to deploy changes properly at dev stage
+    #consumes resources for repacking, hence should be switched to true at prod stage
+    useDownloadCache: false
+    useStaticCache: false
+    #*OPTIONAL* when TRUE, emloys docker to standardize packaging of requirements
+    dockerizePip: false
+  #*OPTIONAL* needed for local testing of flask app
+  dynamodb:
+    start:
+      migrate: true
+    stages:
+      - ${self:custom.stage}
+  bucketarn: !GetAtt [ "bucket", "Arn" ]
+

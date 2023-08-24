@@ -1,0 +1,5 @@
+tensorflow
+pillow
+joblib
+numpy
+scikit-learn #temporary avoidance of buggy update sklearn 0.0.post2, needs to be changed to scikit-learn

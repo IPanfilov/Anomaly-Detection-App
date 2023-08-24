@@ -1,0 +1,39 @@
+{% extends "main.html" %}
+{% block head %}
+Anomaly detection
+{% endblock %}
+{% block body %}
+<form method="POST" enctype="multipart/form-data" action="{{ url_for('save') }}">
+{{ form.csrf_token }}
+{{ form.image_id(class="form-control") }}
+<div class="row">
+<div class="col-md-8">
+{% if signed_url %}
+<img alt="Mugshot" src="{{ signed_url }}" />
+{% endif %}
+{{ form.photo() }}
+</div>
+
+<div class="col-md-4">
+<div class="form-group row">
+<label class="col-sm-2">{{form.name.label}}</label>
+<div class="col-sm-10">
+{{ form.name(class="form-control", autocomplete="off") }}
+</div>
+</div>
+<div class="form-group row">
+<label class="col-sm-2">{{form.label.label}}</label>
+<div class="col-sm-10">
+{{ form.label(class="form-control", autocomplete="off") }}
+</div>
+</div>
+&nbsp;
+<div class="control-group">
+<div class="controls">
+  <input class="btn btn-primary" type="submit" value={{button}}>
+</div>
+</div>
+</div>
+</div>
+</form>
+{% endblock %}
