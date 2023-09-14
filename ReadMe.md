@@ -10,7 +10,7 @@ in AWS: [Lambda](https://aws.amazon.com/lambda/) to process requests and classif
 [DynamoDB](https://aws.amazon.com/dynamodb/) to store records, [S3](https://aws.amazon.com/s3/)
 to store images, ML models, and Python dependencies.
 
-![alt text](https://github.com/IPanfilov/Anomaly-Detection/blob/assets/assets/Project%20Structure%20Diagram.drawio.png)
+![alt text](https://github.com/IPanfilov/Anomaly-Detection-App/blob/assets/assets/Project%20Structure%20Diagram.drawio.png)
 
 ## Training the ML model
 This part of the project allows one to train their own Anomaly Detection ML model and evaluate
@@ -52,7 +52,7 @@ This part of the project allows one to deploy an ML model as an online service i
 - Serverless CLI
 
 ### Deployment
-![alt text](https://github.com/IPanfilov/Anomaly-Detection/blob/assets/assets/aws_deployment.drawio.png)
+![alt text](https://github.com/IPanfilov/Anomaly-Detection-App/blob/assets/assets/aws_deployment.drawio.png)
 
 Once all the required software is installed, there are only four steps needed to deploy the web service:
 - Create an S3 bucket with the unique name "your bucket"
@@ -67,5 +67,5 @@ Once the application is deployed to AWS, the HTTP endpoint will be created.
 By opening the endpoint link through the web browser a user can:
 - Submit new samples for testing
 - Check the records of existing samples
-![alt text](https://github.com/IPanfilov/Anomaly-Detection/blob/assets/assets/Application.drawio.png)
+![alt text](https://github.com/IPanfilov/Anomaly-Detection-App/blob/assets/assets/Application.drawio.png)
 
