@@ -10,10 +10,12 @@ in AWS: [Lambda](https://aws.amazon.com/lambda/) to process requests and classif
 [DynamoDB](https://aws.amazon.com/dynamodb/) to store records, [S3](https://aws.amazon.com/s3/)
 to store images, ML models, and Python dependencies.
 
-## Project progress reports can be found here:
+### Project progress reports can be found here:
 
 [Project proposal](https://docs.google.com/presentation/d/1KFACGvk-Gpo10dYE4GpWe6kkxic5LzLWMCPWtHpKyoc/edit?usp=sharing)
+
 [ML Solution Evaluation](https://docs.google.com/presentation/d/1bvvKEdYSLog70McFPxzftDJqNkvEMcyZNpF4FunmpYI/edit?usp=sharing)
+
 [Web Service Cost Estimation](https://docs.google.com/presentation/d/1WcTzI2QLuQVW55rnOraGqpc4zi-f5F3OZinETu9tA2A/edit?usp=sharing)
 
 ![alt text](https://github.com/IPanfilov/Anomaly-Detection-App/blob/assets/assets/Project%20Structure%20Diagram.drawio.png)
